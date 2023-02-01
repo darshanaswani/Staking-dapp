@@ -1,0 +1,16 @@
+.details-container{
+    display: flex;
+}
+
+.details-group{
+    padding: 0 20px 0 20px;
+}
+
+.details{
+    color: white;
+    padding: 5px;
+}
+
+.numbers{
+    display: block;
+}
