@@ -212,6 +212,7 @@ export const stakeAmount = async (
       progress: undefined,
       theme: "colored",
       type: "success",
+      isLoading: false,
     });
     loadDetailsAfterStaking(account, stakingContract, token, dispatch);
   } catch (err) {
@@ -293,6 +294,7 @@ export const withDrawAmount = async (
       progress: undefined,
       theme: "colored",
       type: "success",
+      isLoading: false,
     });
     console.log(receipt);
     loadDetailsAfterWithDrawing(account, stakingContract, dispatch);
