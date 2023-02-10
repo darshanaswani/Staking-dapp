@@ -1,0 +1,9 @@
+.farming-detail{
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid grey;
+    padding: 5px;
+    margin-bottom: 5px;
+}
+

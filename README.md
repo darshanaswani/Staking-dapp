@@ -1,6 +1,7 @@
-# Staking Dapp
+# Staking & Farming Dapp
 
-User can stake MDT tokens for some days and get interest based on the time period and number of tokens they staked
+- Staking - User can stake MDT tokens for some days and get interest based on the time period and number of tokens they staked
+- Farming - farming, or liquidity farming, is the act of lending or staking your cryptocurrency into a liquidity pool, through DeFi (Decentralized Finance) to receive rewards such as interest and more of their staked cryptocurrency.
 
 ## Installation and Running
 

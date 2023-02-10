@@ -1,11 +1,4 @@
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Heading,
-  Button,
-  CardFooter,
-} from "@chakra-ui/react";
+import { CardBody, Button, CardFooter } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import "./Staking.styles.css";
 import {
@@ -76,172 +69,159 @@ const Staking = () => {
 
   return (
     <div
-      className="staking"
       style={{
+        width: "100%",
         display: "flex",
-        justifyContent: "center",
+        flexDirection: "column",
         alignItems: "center",
-        height: "85vh",
       }}
     >
-      <Card
-        align="center"
-        width={"500px"}
-        boxShadow="lg"
-        background="rgba(30,28,32,0.6)"
-        backdropFilter="saturate(180%) blur(10px)"
-      >
-        <CardHeader>
-          <Heading size="lg" color={"white"}>
-            Stake
-          </Heading>
-        </CardHeader>
-
-        <CardBody width={"90%"} display="block">
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-evenly",
-              padding: "5px",
-            }}
-          >
-            <Button
-              colorScheme="blue"
-              width={"20%"}
-              background="transparent"
-              border={"2px solid white"}
-            >
-              7
-            </Button>
-            <Button
-              colorScheme="blue"
-              width={"20%"}
-              background="transparent"
-              border={"2px solid white"}
-              backgroundColor="rgba(128,90,213)"
-            >
-              14
-            </Button>
-            <Button
-              colorScheme="blue"
-              width={"20%"}
-              background="transparent"
-              border={"2px solid white"}
-            >
-              30
-            </Button>
-            <Button
-              colorScheme="blue"
-              width={"20%"}
-              background="transparent"
-              border={"2px solid white"}
-            >
-              60
-            </Button>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-evenly",
-              padding: "5px",
-            }}
-          >
-            <Button
-              colorScheme="blue"
-              width={"45%"}
-              background="transparent"
-              border={"2px solid white"}
-            >
-              90
-            </Button>
-            <Button
-              colorScheme="blue"
-              width={"45%"}
-              background="transparent"
-              border={"2px solid white"}
-            >
-              180
-            </Button>
-          </div>
-        </CardBody>
-
-        <CardBody className="details-container">
-          <div className="details-group">
-            <p className="details">
-              Your staked amount :
-              <span className="numbers">
-                {userDepositData.depositAmount} MDT
-              </span>
-            </p>
-            <p className="details">
-              Maturity Date :
-              <span className="numbers">
-                {userDepositData.depositAmount !== "0" && account !== null ? (
-                  <Timer
-                    start={userDepositData.depositTime}
-                    end={userDepositData.endTime}
-                  />
-                ) : (
-                  <></>
-                )}
-              </span>
-            </p>
-          </div>
-
-          <div className="details-group">
-            <p className="details">
-              APY Rate :<span className="numbers">11 %</span>
-            </p>
-            <p className="details">
-              Balance :
-              <span className="numbers">
-                {mdtBalance !== null ? mdtBalance : 0} MDT
-              </span>
-            </p>
-          </div>
-        </CardBody>
-
-        <CardFooter
-          width={"100%"}
-          display="flex"
-          alignItems="center"
-          flexDirection="column"
+      <CardBody width={"90%"} display="block" padding={"40px"}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-evenly",
+          }}
         >
-          {tokenApproved !== "undefined" && tokenApproved ? (
-            <>
-              {console.log(tokenApproved)}
-              <Button
-                colorScheme="purple"
-                width={"80%"}
-                marginBottom="15px"
-                onClick={() => {
-                  if (userDepositData.depositAmount !== "0") {
-                    handleWithDraw();
-                  } else {
-                    handleStakingClick();
-                  }
-                }}
-              >
-                {userDepositData.depositAmount !== "0" ? "Withdraw" : "Stake"}
-              </Button>
+          <Button
+            colorScheme="blue"
+            width={"20%"}
+            background="transparent"
+            border={"2px solid white"}
+          >
+            7
+          </Button>
+          <Button
+            colorScheme="blue"
+            width={"20%"}
+            background="transparent"
+            border={"2px solid white"}
+            backgroundColor="rgba(128,90,213)"
+          >
+            14
+          </Button>
+          <Button
+            colorScheme="blue"
+            width={"20%"}
+            background="transparent"
+            border={"2px solid white"}
+          >
+            30
+          </Button>
+          <Button
+            colorScheme="blue"
+            width={"20%"}
+            background="transparent"
+            border={"2px solid white"}
+          >
+            60
+          </Button>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-evenly",
+            padding: "5px",
+          }}
+        >
+          <Button
+            colorScheme="blue"
+            width={"45%"}
+            background="transparent"
+            border={"2px solid white"}
+          >
+            90
+          </Button>
+          <Button
+            colorScheme="blue"
+            width={"45%"}
+            background="transparent"
+            border={"2px solid white"}
+          >
+            180
+          </Button>
+        </div>
+      </CardBody>
 
-              <StakingModal
-                open={open}
-                handleStakingClick={handleStakingClick}
-                stakingContract={stakingContract}
-                token={token}
-                account={account}
-                mdtBalance={mdtBalance}
-                dispatch={dispatch}
-              />
-            </>
-          ) : (
-            <Button colorScheme="purple" width={"80%"} onClick={handleApprove}>
-              Approve
+      <CardBody className="details-container">
+        <div className="details-group">
+          <p className="details">
+            Your staked amount :
+            <span className="numbers">{userDepositData.depositAmount} MDT</span>
+          </p>
+          <p className="details">
+            Maturity Date :
+            <span className="numbers">
+              {userDepositData.depositAmount !== "0" && account !== null ? (
+                <Timer
+                  start={userDepositData.depositTime}
+                  end={userDepositData.endTime}
+                />
+              ) : (
+                <></>
+              )}
+            </span>
+          </p>
+        </div>
+
+        <div className="details-group">
+          <p className="details">
+            APY Rate :<span className="numbers">11 %</span>
+          </p>
+          <p className="details">
+            Balance :
+            <span className="numbers">
+              {mdtBalance !== null ? mdtBalance : 0} MDT
+            </span>
+          </p>
+        </div>
+      </CardBody>
+
+      <CardFooter
+        width={"100%"}
+        display="flex"
+        alignItems="center"
+        flexDirection="column"
+      >
+        {tokenApproved !== "undefined" && tokenApproved ? (
+          <>
+            {console.log(tokenApproved)}
+            <Button
+              colorScheme="purple"
+              width={"80%"}
+              marginBottom="15px"
+              onClick={() => {
+                if (userDepositData.depositAmount !== "0") {
+                  handleWithDraw();
+                } else {
+                  handleStakingClick();
+                }
+              }}
+            >
+              {userDepositData.depositAmount !== "0" ? "Withdraw" : "Stake"}
             </Button>
-          )}
-        </CardFooter>
-      </Card>
+
+            <StakingModal
+              open={open}
+              handleStakingClick={handleStakingClick}
+              stakingContract={stakingContract}
+              token={token}
+              account={account}
+              mdtBalance={mdtBalance}
+              dispatch={dispatch}
+            />
+          </>
+        ) : (
+          <Button
+            colorScheme="purple"
+            width={"80%"}
+            onClick={handleApprove}
+            disabled={account ? false : true}
+          >
+            Approve
+          </Button>
+        )}
+      </CardFooter>
     </div>
   );
 };

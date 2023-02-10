@@ -19,7 +19,7 @@ import {
   stakingContractLoaded,
   stakingContractLoadingError,
 } from "../redux/staking-contract/staking.actions";
-import { conversion } from "./helper";
+import { conversion, getNetworkDetails, bscChainId } from "./helper";
 import {
   userDepositDetailsReset,
   userDepositFetched,
@@ -27,6 +27,10 @@ import {
   userDepositFetchingError,
 } from "../redux/user-deposit/user-deposit.actions";
 import { toast } from "react-toastify";
+import {
+  checkLpTokenAllowance,
+  loadUserDepositDetails,
+} from "./farming-interactions";
 
 export const loadWeb3 = (dispatch) => {
   if (typeof window.ethereum !== "undefined") {
@@ -69,12 +73,31 @@ export const loadStakingContract = async (web3, dispatch) => {
 
 export const loadAccount = async (web3, dispatch) => {
   const accounts = await web3.eth.getAccounts();
-  const account = await accounts[0];
+  console.log(accounts);
+  console.log("load account");
+  const account = accounts[0];
+  console.log(typeof JSON.parse(window.localStorage.getItem(account)));
+  if (JSON.parse(window.localStorage.getItem(account))) {
+    console.log("account exist");
+    return;
+  }
   if (typeof account !== "undefined") {
     dispatch(web3AccountLoaded(account));
     return account;
   } else {
-    window.alert("please login with metamask");
+    toast.dismiss();
+    toast.error("Please login with metamask", {
+      position: "bottom-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+
+    // window.alert("please login with metamask");
     return null;
   }
 };
@@ -314,52 +337,104 @@ export const withDrawAmount = async (
   }
 };
 
-export const connectWallet = (dispatch, token, stakingContract) => {
-  if (typeof window.ethereum !== "undefined") {
-    window.ethereum
-      .request({ method: "eth_requestAccounts" })
-      .then((accounts) => {
-        const account = accounts[0];
-        console.log(`Wallet connected: ${account}`);
-        dispatch(web3AccountLoaded(account));
-        checkAllowance(dispatch, token, stakingContract, account);
-        loadDetailsAfterStaking(account, stakingContract, token, dispatch);
-        toast.success("Connected account successfully !", {
-          position: "bottom-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-      })
-      .catch((error) => {
-        toast.error("Error occured while connecting to your wallet !", {
-          position: "bottom-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
+export const addNetwork = async (networkDetails) => {
+  console.log("addntework");
+  try {
+    await window.ethereum.request({
+      method: "wallet_addEthereumChain",
+      params: [networkDetails],
+    });
+  } catch (err) {
+    console.log(
+      `error ocuured while adding new chain with chainId:${networkDetails.chainId}, err: ${err.message}`
+    );
+  }
+};
 
-        // Handle error
-        console.log(error, error.code);
-
-        // 4001 - The request was rejected by the user
-        // -32602 - The parameters were invalid
-        // -32603- Internal error
+export const switchNetwork = async (chainId, web3) => {
+  const currentChainId = await web3.eth.getChainId();
+  console.log("chain Id");
+  console.log(typeof currentChainId);
+  if (currentChainId !== chainId) {
+    try {
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: Web3.utils.toHex(chainId) }],
       });
+      console.log(`switched to chainid : ${chainId} succesfully`);
+    } catch (err) {
+      console.log(
+        `error occured while switching chain to chainId ${chainId}, err: ${err.message} code: ${err.code}`
+      );
+      if (err.code === 4902) {
+        console.log("catch");
+        await addNetwork(getNetworkDetails());
+      }
+    }
+  }
+};
+
+export const connectWallet = async (
+  dispatch,
+  token,
+  stakingContract,
+  web3,
+  farmingContract,
+  lpToken
+) => {
+  if (typeof window.ethereum !== "undefined") {
+    try {
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      window.localStorage.clear();
+      const account = accounts[0];
+      await switchNetwork(bscChainId, web3);
+      console.log("after switching");
+      console.log(`Wallet connected: ${account}`);
+      dispatch(web3AccountLoaded(account));
+      checkAllowance(dispatch, token, stakingContract, account);
+      loadDetailsAfterStaking(account, stakingContract, token, dispatch);
+      checkLpTokenAllowance(dispatch, lpToken, farmingContract, account);
+      loadUserDepositDetails(dispatch, account, farmingContract, lpToken);
+      toast.dismiss();
+      toast.success("Connected account successfully !", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    } catch (error) {
+      toast.error("Error occured while connecting to your wallet !", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+
+      // Handle error
+      console.log(error, error.code);
+
+      // 4001 - The request was rejected by the user
+      // -32602 - The parameters were invalid
+      // -32603- Internal error
+    }
   } else {
     window.open("https://metamask.io/download/", "_blank");
   }
 };
 
-export const disconnectAccount = (dispatch) => {
+export const disconnectAccount = (dispatch, account) => {
+  window.localStorage.clear();
+  window.localStorage.setItem(account, true);
   dispatch(web3AccountDisconnect());
   dispatch(tokenReset());
   dispatch(userDepositDetailsReset());

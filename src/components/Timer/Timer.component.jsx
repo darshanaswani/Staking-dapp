@@ -3,7 +3,6 @@ import Countdown from "react-countdown";
 
 const Timer = ({ start, end }) => {
   const timerCount = end - Date.now();
-
   return (
     <>
       {timerCount <= 0 ? (
