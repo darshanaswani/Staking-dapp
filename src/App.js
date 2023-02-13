@@ -31,7 +31,6 @@ const loadBlockChainData = async (dispatch) => {
   await loadLpTokenBalance(dispatch, account, lpToken);
   checkAllowance(dispatch, token, stakingContract, account);
   checkLpTokenAllowance(dispatch, lpToken, farmingContract, account);
-  // subscribeToEvents(token, stakingContract, dispatch);
 };
 
 function App() {

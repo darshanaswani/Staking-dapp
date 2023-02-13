@@ -139,6 +139,11 @@ export const loadUserDepositDetails = async (
     const timeStamp = Date.now() + milliSeconds;
 
     const stakedBalance = await farmingContract.methods.stakedBalance().call();
+    const rewsPerBlock = getEtherValue(
+      await farmingContract.methods.rewPerBlock().call()
+    );
+
+    const rewardsPerMinute = (60 / 3) * Number(rewsPerBlock);
 
     const poolshare =
       Number(getEtherValue(stakedBalance)) /
@@ -152,6 +157,7 @@ export const loadUserDepositDetails = async (
       timeRemaining: timeStamp,
       participants,
       poolshare,
+      rewardsPerMinute,
     };
     loadLpTokenBalance(dispatch, account, token);
     dispatch(farmingUserDepositFetched(data));

@@ -9,6 +9,7 @@ const INITIAL_STATE = {
     userIndex: null,
     rewards: 0,
     paid: false,
+    rewardsPerMinute: 0,
   },
   error: null,
 };
@@ -18,6 +19,7 @@ const userDepositReducer = (state = INITIAL_STATE, action) => {
 
   switch (type) {
     case USER_DEPOSIT_ACTION_TYPES.USER_DEPOSIT_DETAILS_FETCHED:
+      console.log(state);
       return {
         ...state,
         userDepositInfo: payload,
